@@ -1,18 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorLightningYellow"
     tools:context="kelvinbiffi.com.taptowin.Splash">
 
-    <TextView
+
+    <ImageView
+        android:id="@+id/imageSplash"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/splash_tap_to_win" />
 
-</android.support.constraint.ConstraintLayout>
+    <Button
+        android:id="@+id/btnPlay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imageSplash"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:textAllCaps="true"
+        android:textSize="25dp"
+        android:text="@string/text_play"
+        android:background="@drawable/splash_play_button"/>
+</RelativeLayout>
