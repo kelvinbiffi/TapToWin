@@ -48,31 +48,100 @@
         android:id="@+id/layoutGame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_margin="20px"
         android:elevation="1dp"
-        android:visibility="invisible"
-        android:layout_margin="20px">
+        android:visibility="visible">
+
+        <Button
+            android:id="@+id/btnBegin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/splash_play_button"
+            android:text="Begin"
+            android:textAllCaps="true"
+            android:textSize="36dp" />
+
+        <Button
+            android:id="@+id/btnReset"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/splash_play_button"
+            android:visibility="invisible"
+            android:text="Reset"
+            android:textAllCaps="true"
+            android:textSize="36dp" />
+
+        <TextView
+            android:id="@+id/tvCountBegin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:textColor="@color/colorTamarind"
+            android:text="3"
+            android:visibility="invisible"
+            android:textSize="200dp"></TextView>
+
+
+        <TextView
+            android:id="@+id/tvPlayer1"
+            android:text="0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/btnPlayer1"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:gravity="center"
+            android:textColor="@color/colorTamarind"
+            android:textSize="24dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/splash_play_button"
+            android:visibility="invisible"
+            android:src="@drawable/player1"></TextView>
 
         <ImageButton
             android:id="@+id/btnPlayer1"
             android:layout_width="200px"
             android:layout_height="200px"
-            android:src="@drawable/player1"
-            android:scaleType="fitXY"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:background="@drawable/player_button"/>
+            android:background="@drawable/player_button"
+            android:scaleType="fitXY"
+            android:visibility="invisible"
+            android:src="@drawable/player1" />
+
+        <TextView
+            android:id="@+id/tvPlayer2"
+            android:text="0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/splash_play_button"
+            android:visibility="invisible"
+            android:gravity="center"
+            android:layout_margin="10dp"
+            android:textColor="@color/colorTamarind"
+            android:textSize="24dp"
+            android:src="@drawable/player1"
+            android:layout_above="@+id/btnPlayer2"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"></TextView>
 
         <ImageButton
             android:id="@+id/btnPlayer2"
             android:layout_width="200px"
             android:layout_height="200px"
-            android:src="@drawable/player2"
-            android:scaleType="fitXY"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:background="@drawable/player_button"/>
+            android:background="@drawable/player_button"
+            android:scaleType="fitXY"
+            android:visibility="invisible"
+            android:src="@drawable/player2" />
 
     </RelativeLayout>
 </RelativeLayout>

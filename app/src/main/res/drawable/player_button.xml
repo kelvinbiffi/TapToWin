@@ -5,5 +5,10 @@
         android:color="@color/colorTamarind"/>
     <corners
         android:radius="3dp" />
+    <padding
+        android:left="2dp"
+        android:right="2dp"
+        android:top="2dp"
+        android:bottom="2dp"/>
     <solid android:color="@color/colorGoldenBell"/>
 </shape>
