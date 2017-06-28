@@ -3,19 +3,17 @@ package kelvinbiffi.com.taptowin;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
-import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-
-import java.util.Random;
 
 public class Splash extends Activity {
 
     Button btnPlay;
     MediaPlayer ninja;
     handleSong songs = new handleSong();
+    handleFonts fonts = new handleFonts();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,8 +28,7 @@ public class Splash extends Activity {
     private void configButton(){
         btnPlay = (Button) findViewById(R.id.btnPlay);
 
-        Typeface font = Typeface.createFromAsset(getAssets(), "fonts/orchidee_medium.ttf");
-        btnPlay.setTypeface(font);
+        btnPlay.setTypeface(fonts.getFont(this));
 
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -2,8 +2,77 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainBackground"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/back2"
     tools:context="kelvinbiffi.com.taptowin.Main">
 
+    <RelativeLayout
+        android:id="@+id/layoutRules"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.8"
+        android:background="@color/colorGoldenBell"
+        android:elevation="1dp"
+        android:visibility="invisible"
+        android:layout_margin="20px">
+
+        <TextView
+            android:id="@+id/textRules"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:textColor="@color/colorTamarind"
+            android:textSize="25dp"
+            android:gravity="center"
+            android:text="@string/text_rules"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"></TextView>
+
+        <Button
+            android:id="@+id/btnStart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textRules"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:textAllCaps="true"
+            android:textSize="25dp"
+            android:text="@string/text_start"
+            android:background="@drawable/splash_play_button"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layoutGame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="1dp"
+        android:visibility="invisible"
+        android:layout_margin="20px">
+
+        <ImageButton
+            android:id="@+id/btnPlayer1"
+            android:layout_width="200px"
+            android:layout_height="200px"
+            android:src="@drawable/player1"
+            android:scaleType="fitXY"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:background="@drawable/player_button"/>
+
+        <ImageButton
+            android:id="@+id/btnPlayer2"
+            android:layout_width="200px"
+            android:layout_height="200px"
+            android:src="@drawable/player2"
+            android:scaleType="fitXY"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/player_button"/>
+
+    </RelativeLayout>
 </RelativeLayout>

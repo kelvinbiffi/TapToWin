@@ -3,4 +3,6 @@
     <string name="title_activity_main2">Main2Activity</string>
 
     <string name="text_play">Play</string>
+    <string name="text_start">Tap</string>
+    <string name="text_rules">In this game there is just one rule!\r\nTap faster than your opponent to become the winner!</string>
 </resources>
