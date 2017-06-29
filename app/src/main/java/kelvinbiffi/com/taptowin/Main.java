@@ -20,43 +20,169 @@ import java.util.Random;
 
 public class Main extends Activity {
 
-    TextView textRules, tvCountBegin, tvPlayer1, tvPlayer2;
+    //Screen objects
+    RelativeLayout mainBackground, layoutRules, layoutGame;
+    TextView textRules, tvCountBegin, tvPlayer1, tvPlayer2, tvPlayer1Wins, tvPlayer2Wins;
     Button btnStart, btnBegin, btnReset;
     ImageButton btnPlayer1, btnPlayer2;
-    ImageView winnerImage;
+    ImageView winnerImage, tvShurikenPlayer1, tvShurikenPlayer2;
 
+    //Geme utils
     Random rand = new Random();
-    RelativeLayout mainBackground, layoutRules, layoutGame;
     handleFonts fonts = new handleFonts();
     handleSong songs = new handleSong();
-
     preferences prefs;
 
+    //Game medias
     MediaPlayer ninja1 = new MediaPlayer();
     MediaPlayer ninja2 = new MediaPlayer();
     MediaPlayer musicGame = new MediaPlayer();
-    MediaPlayer effects = new MediaPlayer();
 
+    MediaPlayer mpTap = new MediaPlayer();
+    MediaPlayer mpOne = new MediaPlayer();
+    MediaPlayer mpTwo = new MediaPlayer();
+    MediaPlayer mpThree = new MediaPlayer();
+    MediaPlayer mpPlayer1 = new MediaPlayer();
+    MediaPlayer mpPlayer2 = new MediaPlayer();
+    MediaPlayer mpDraw = new MediaPlayer();
+
+    //Game data
     CountDownTimer game;
+    int player1, player2, stageGame = 4;
+    int[] playerWins = {0, 0};
 
-    int player1, player2, stageGame = 3;
-
+    /**
+     * Check if the user have already read the rules or not
+     */
     private void checkViewRules(){
         if (prefs.rulesWasRead()){
-            displayGameObjects();
+            configGameObjects();
+            btnBegin.setVisibility(View.VISIBLE);
         }else{
-            setFontRules();
             setStartButton();
             layoutRules.setVisibility(View.VISIBLE);
         }
     }
 
+    /**
+     * On create function (Native function)
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        prefs = new preferences(this);
+        prefs = new preferences(this);//Create game preferences object
+        setGameEffectObjects();
+        setContextObjects();
+        setFonts();
+        backImage();
+        checkViewRules();
+    }
+
+    /**
+     * Prepare game effects object
+     */
+    private void setGameEffectObjects(){
+
+        try{
+
+            /**
+             * Generic media player error listener object
+             */
+            MediaPlayer.OnErrorListener effectErrorListener = new MediaPlayer.OnErrorListener() {
+                @Override
+                public boolean onError(MediaPlayer mp, int what, int extra) {
+                    System.out.println("Effects: what-> " + String.valueOf(what) + " extra-> " + String.valueOf(what));
+                    System.out.println(mp.isPlaying());
+                    return false;
+                }
+            };
+
+            AssetFileDescriptor descriptor;
+            float vol = 1f;
+
+            // Tap effect
+            mpTap = new MediaPlayer();
+            descriptor = getAssets().openFd("sounds/tap.mp3");
+            mpTap.setDataSource(descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength());
+            descriptor.close();
+            mpTap.setVolume(vol,vol);
+            mpTap.setLooping(false);
+            mpTap.prepare();
+            mpTap.setOnErrorListener(effectErrorListener);
+
+            //one effect
+            mpOne = new MediaPlayer();
+            descriptor = getAssets().openFd("sounds/one.mp3");
+            mpOne.setDataSource(descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength());
+            descriptor.close();
+            mpOne.setVolume(vol,vol);
+            mpOne.setLooping(false);
+            mpOne.prepare();
+            mpOne.setOnErrorListener(effectErrorListener);
+
+            //two effect
+            mpTwo = new MediaPlayer();
+            descriptor = getAssets().openFd("sounds/two.mp3");
+            mpTwo.setDataSource(descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength());
+            descriptor.close();
+            mpTwo.setVolume(vol,vol);
+            mpTwo.setLooping(false);
+            mpTwo.prepare();
+            mpTwo.setOnErrorListener(effectErrorListener);
+
+            //three effect
+            mpThree = new MediaPlayer();
+            descriptor = getAssets().openFd("sounds/three.mp3");
+            mpThree.setDataSource(descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength());
+            descriptor.close();
+            mpThree.setVolume(vol,vol);
+            mpThree.setLooping(false);
+            mpThree.prepare();
+            mpThree.setOnErrorListener(effectErrorListener);
+
+            //Player 1 victory effect
+            mpPlayer1 = new MediaPlayer();
+            descriptor = getAssets().openFd("sounds/player1.mp3");
+            mpPlayer1.setDataSource(descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength());
+            descriptor.close();
+            mpPlayer1.setVolume(vol,vol);
+            mpPlayer1.setLooping(false);
+            mpPlayer1.prepare();
+            mpPlayer1.setOnErrorListener(effectErrorListener);
+
+            //three effect
+            mpPlayer2 = new MediaPlayer();
+            descriptor = getAssets().openFd("sounds/player2.mp3");
+            mpPlayer2.setDataSource(descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength());
+            descriptor.close();
+            mpPlayer2.setVolume(vol,vol);
+            mpPlayer2.setLooping(false);
+            mpPlayer2.prepare();
+            mpPlayer2.setOnErrorListener(effectErrorListener);
+
+            //three effect
+            mpDraw = new MediaPlayer();
+            descriptor = getAssets().openFd("sounds/draw.mp3");
+            mpDraw.setDataSource(descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength());
+            descriptor.close();
+            mpDraw.setVolume(vol,vol);
+            mpDraw.setLooping(false);
+            mpDraw.prepare();
+            mpDraw.setOnErrorListener(effectErrorListener);
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Context class object from layout objects
+     */
+    private void setContextObjects(){
+        //Layouts components
         mainBackground = (RelativeLayout) findViewById(R.id.mainBackground);
         layoutRules = (RelativeLayout) findViewById(R.id.layoutRules);
         layoutGame = (RelativeLayout) findViewById(R.id.layoutGame);
@@ -72,15 +198,19 @@ public class Main extends Activity {
 
         //Game Components
         winnerImage = (ImageView) findViewById(R.id.winnerImage);
+        tvShurikenPlayer1 = (ImageView) findViewById(R.id.tvShurikenPlayer1);
+        tvShurikenPlayer2 = (ImageView) findViewById(R.id.tvShurikenPlayer2);
         tvPlayer1 = (TextView)findViewById(R.id.tvPlayer1);
         tvPlayer2 = (TextView)findViewById(R.id.tvPlayer2);
+        tvPlayer1Wins = (TextView)findViewById(R.id.tvPlayer1Wins);
+        tvPlayer2Wins = (TextView)findViewById(R.id.tvPlayer2Wins);
         btnPlayer1 = (ImageButton)findViewById(R.id.btnPlayer1);
         btnPlayer2 = (ImageButton)findViewById(R.id.btnPlayer2);
-
-        backImage();
-        checkViewRules();
     }
 
+    /**
+     * Random a image to background from 0 to 3 sum 4 options
+     */
     private void backImage(){
         int i = rand.nextInt(4);
         switch (i){
@@ -98,59 +228,71 @@ public class Main extends Activity {
         }
     }
 
-    private void setFontRules(){
+    /**
+     * Set the game font
+     *
+     * Obs.: To each new text object put it here the set the font
+     */
+    private void setFonts(){
         textRules.setTypeface(fonts.getFont(this));
+        btnStart.setTypeface(fonts.getFont(this));
+        btnBegin.setTypeface(fonts.getFont(this));
+        tvPlayer1.setTypeface(fonts.getFont(this));
+        tvPlayer2.setTypeface(fonts.getFont(this));
+        tvCountBegin.setTypeface(fonts.getFont(this));
     }
 
+    /**
+     * Set start rules button
+     */
     private void setStartButton(){
-        btnStart.setTypeface(fonts.getFont(this));
-
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 prefs.readRules();
-                hideRules();
+                layoutRules.setVisibility(View.INVISIBLE);
+                btnBegin.setVisibility(View.VISIBLE);
+                configGameObjects();
             }
         });
     }
 
-    private void hideRules(){
-        layoutRules.setVisibility(View.INVISIBLE);
-
-        displayGameObjects();
-    }
-
-    private void displayGameObjects(){
+    /**
+     * Config the game components and show them
+     */
+    private void configGameObjects(){
         setBeginActions();
-
         setResetActions();
-
         setPlayerSize();
         setConfigPlayerSongs();
         setPlayerActions();
-
-        setPlayerTextPoints();
-
         layoutGame.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * set reset actions from game object
+     */
     private void setResetActions(){
         btnReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //In case of the game is running erase
                 if (game != null){
                     game.cancel();
                 }
                 musicGame.stop();
                 winnerImage.setVisibility(View.INVISIBLE);
+                backImage();
                 hideGameComponents();
                 startCountDownBegin();
             }
         });
     }
 
+    /**
+     * Set begin action from game object
+     */
     private void setBeginActions(){
-        btnBegin.setTypeface(fonts.getFont(this));
         btnBegin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -162,6 +304,11 @@ public class Main extends Activity {
         });
     }
 
+    /**
+     * Play songs based on the string passed by reference
+     *
+     * @param song song to be executed
+     */
     private void playSong(String song){
         try{
             AssetFileDescriptor descriptor;
@@ -178,44 +325,18 @@ public class Main extends Activity {
             musicGame.setVolume(1f,1f);
             musicGame.setLooping(false);
             musicGame.prepare();
-            musicGame.start();
+
+            musicGame.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
 
             musicGame.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                 @Override
                 public boolean onError(MediaPlayer mp, int what, int extra) {
                     System.out.println("Music: what-> " + String.valueOf(what) + " extra-> " + String.valueOf(what));
-                    System.out.println(mp.isPlaying());
-                    return false;
-                }
-            });
-
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    private void playSongEffect(String song){
-        try{
-            AssetFileDescriptor descriptor;
-            if (effects != null && effects.isPlaying()){
-                effects.stop();
-                effects.release();
-            }
-            effects = new MediaPlayer();
-
-            descriptor = getAssets().openFd("sounds/" + song);
-            effects.setDataSource(descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength());
-            descriptor.close();
-
-            effects.setVolume(1f,1f);
-            effects.setLooping(false);
-            effects.prepare();
-            effects.start();
-
-            effects.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-                @Override
-                public boolean onError(MediaPlayer mp, int what, int extra) {
-                    System.out.println("Effects: what-> " + String.valueOf(what) + " extra-> " + String.valueOf(what));
                     System.out.println(mp.isPlaying());
                     return false;
                 }
@@ -234,27 +355,30 @@ public class Main extends Activity {
         switch (time){
             case 4:
                 tvCountBegin.setText("3");
-                playSongEffect("three.mp3");
+                if (mpThree.isPlaying())
+                    mpThree.stop();
+                mpThree.start();
                 break;
             case 3:
                 tvCountBegin.setText("2");
-                playSongEffect("two.mp3");
+                if (mpTwo.isPlaying())
+                    mpTwo.stop();
+                mpTwo.start();
                 break;
             case 2:
                 tvCountBegin.setText("1");
-                playSongEffect("one.mp3");
+                if (mpOne.isPlaying())
+                    mpOne.stop();
+                mpOne.start();
                 break;
             case 1:
                 tvCountBegin.setTextSize(100);
                 tvCountBegin.setText("TAP");
-                playSongEffect("tap.mp3");
+                if (mpTap.isPlaying())
+                    mpTap.stop();
+                mpTap.start();
                 break;
         }
-    }
-
-    private void setPlayerTextPoints(){
-        tvPlayer1.setTypeface(fonts.getFont(this));
-        tvPlayer2.setTypeface(fonts.getFont(this));
     }
 
     /**
@@ -266,7 +390,6 @@ public class Main extends Activity {
         tvCountBegin.setTextColor(getResources().getColor(R.color.colorTamarind));
         tvCountBegin.setVisibility(View.VISIBLE);
         tvCountBegin.setTextSize(200);
-        tvCountBegin.setTypeface(fonts.getFont(this));
         new CountDownTimer(5*1000, 1000) {
 
             public void onTick(long millisUntilFinished) {
@@ -299,6 +422,9 @@ public class Main extends Activity {
 
     }
 
+    /**
+     * Start the challenge, begin the timer based on the game already played
+     */
     private void startChallenge(){
         player1 = 0;
         tvPlayer1.setText("0");
@@ -323,13 +449,19 @@ public class Main extends Activity {
                     case 3:
                         tvCountBegin.setTextSize(200);
                         tvCountBegin.setTextColor(getResources().getColor(R.color.colorCrimson));
-                        playSongEffect("three.mp3");
+                        if (mpThree.isPlaying())
+                            mpThree.stop();
+                        mpThree.start();
                         break;
                     case 2:
-                        playSongEffect("two.mp3");
+                        if (mpTwo.isPlaying())
+                            mpTwo.stop();
+                        mpTwo.start();
                         break;
                     case 1:
-                        playSongEffect("one.mp3");
+                        if (mpOne.isPlaying())
+                            mpOne.stop();
+                        mpOne.start();
                         break;
                 }
             }
@@ -344,39 +476,80 @@ public class Main extends Activity {
         game.start();
     }
 
+    /**
+     * Check who is the winner, show the iamge from it and play the song victory or draw if was the case
+     */
     private void checkWinner(){
         musicGame.stop();
         hideGameComponents();
         if(player1 > player2){
+            //Decrease time
             if(stageGame > 1) stageGame--;
-            playSongEffect("player1.mp3");
-            winnerImage.setImageResource(R.drawable.player1);
+
+            //Increase a win to player 1
+            playerWins[0]++;
+            tvPlayer1Wins.setText(String.valueOf(playerWins[0]));
+
+            if (mpPlayer1.isPlaying())
+                mpPlayer1.stop();
+            mpPlayer1.start();
+
+            //Show the player 1 image victory
+            winnerImage.setImageResource(R.drawable.player1win);
         } else if(player1 < player2){
+            //Decrease time
             if(stageGame > 1) stageGame--;
-            playSongEffect("player2.mp3");
-            winnerImage.setImageResource(R.drawable.player2);
+
+            //Increase a win to player 2
+            playerWins[1]++;
+            tvPlayer2Wins.setText(String.valueOf(playerWins[1]));
+
+            if (mpPlayer2.isPlaying())
+                mpPlayer2.stop();
+            mpPlayer2.start();
+
+            //Show the player 2 image victory
+            winnerImage.setImageResource(R.drawable.player2win);
         } else {
-            playSongEffect("draw.mp3");
+            if (mpDraw.isPlaying())
+                mpDraw.stop();
+            mpDraw.start();
+
+            //Show the draw image game
             winnerImage.setImageResource(R.drawable.draw);
         }
         winnerImage.setVisibility(View.VISIBLE);
         btnReset.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * Show game components
+     */
     private void showGameComponents(){
         btnReset.setVisibility(View.VISIBLE);
         btnPlayer1.setVisibility(View.VISIBLE);
         btnPlayer2.setVisibility(View.VISIBLE);
         tvPlayer1.setVisibility(View.VISIBLE);
         tvPlayer2.setVisibility(View.VISIBLE);
+        tvPlayer1Wins.setVisibility(View.VISIBLE);
+        tvPlayer2Wins.setVisibility(View.VISIBLE);
+        tvShurikenPlayer1.setVisibility(View.VISIBLE);
+        tvShurikenPlayer2.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * Hide game components
+     */
     private void hideGameComponents(){
         btnReset.setVisibility(View.INVISIBLE);
         btnPlayer1.setVisibility(View.INVISIBLE);
         btnPlayer2.setVisibility(View.INVISIBLE);
         tvPlayer1.setVisibility(View.INVISIBLE);
         tvPlayer2.setVisibility(View.INVISIBLE);
+        tvPlayer1Wins.setVisibility(View.INVISIBLE);
+        tvPlayer2Wins.setVisibility(View.INVISIBLE);
+        tvShurikenPlayer1.setVisibility(View.INVISIBLE);
+        tvShurikenPlayer2.setVisibility(View.INVISIBLE);
     }
 
     /**
@@ -450,7 +623,7 @@ public class Main extends Activity {
     }
 
     /**
-     * Config the button of each player based on the screen size
+     * Config the button of each player and the winnerImage based on the screen size
      */
     private void setPlayerSize(){
         DisplayMetrics displayMetrics = new DisplayMetrics();

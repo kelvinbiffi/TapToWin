@@ -68,7 +68,8 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:background="@drawable/splash_play_button"
-            android:text="Begin"
+            android:text="@string/text_begin"
+            android:visibility="invisible"
             android:textAllCaps="true"
             android:textSize="36dp" />
 
@@ -80,7 +81,7 @@
             android:layout_alignParentTop="true"
             android:background="@drawable/splash_play_button"
             android:visibility="invisible"
-            android:text="Reset"
+            android:text="@string/text_reset"
             android:textAllCaps="true"
             android:textSize="36dp" />
 
@@ -109,8 +110,31 @@
             android:textSize="24dp"
             android:layout_margin="10dp"
             android:background="@drawable/splash_play_button"
+            android:visibility="invisible"></TextView>
+
+        <TextView
+            android:id="@+id/tvPlayer1Wins"
+            android:text="-"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/colorTamarind"
+            android:textSize="24dp"
+            android:background="@drawable/splash_play_button"
             android:visibility="invisible"
-            android:src="@drawable/player1"></TextView>
+            android:layout_alignParentBottom="true"
+            android:layout_toRightOf="@+id/btnPlayer1"
+            android:layout_toEndOf="@+id/btnPlayer1"></TextView>
+
+        <ImageView
+            android:id="@+id/tvShurikenPlayer1"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/shuriken"
+            android:visibility="invisible"
+            android:layout_alignTop="@+id/tvPlayer1Wins"
+            android:layout_toRightOf="@+id/tvPlayer1Wins"
+            android:layout_toEndOf="@+id/tvPlayer1Wins"></ImageView>
 
         <ImageButton
             android:id="@+id/btnPlayer1"
@@ -135,10 +159,33 @@
             android:layout_margin="10dp"
             android:textColor="@color/colorTamarind"
             android:textSize="24dp"
-            android:src="@drawable/player1"
             android:layout_above="@+id/btnPlayer2"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"></TextView>
+
+        <TextView
+            android:id="@+id/tvPlayer2Wins"
+            android:text="-"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/splash_play_button"
+            android:visibility="invisible"
+            android:gravity="center"
+            android:textColor="@color/colorTamarind"
+            android:textSize="24dp"
+            android:layout_alignTop="@+id/btnPlayer2"
+            android:layout_toLeftOf="@+id/btnPlayer2"
+            android:layout_toStartOf="@+id/btnPlayer2"></TextView>
+
+        <ImageView
+            android:id="@+id/tvShurikenPlayer2"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/shuriken"
+            android:visibility="invisible"
+            android:layout_alignTop="@+id/tvPlayer2Wins"
+            android:layout_toLeftOf="@+id/tvPlayer2Wins"
+            android:layout_toStartOf="@+id/tvPlayer2Wins"></ImageView>
 
         <ImageButton
             android:id="@+id/btnPlayer2"

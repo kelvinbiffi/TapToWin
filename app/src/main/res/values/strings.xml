@@ -4,5 +4,7 @@
 
     <string name="text_play">Play</string>
     <string name="text_start">Tap</string>
+    <string name="text_begin">Begin</string>
+    <string name="text_reset">Reset</string>
     <string name="text_rules">In this game there is just one rule!\r\nTap faster than your opponent to become the winner!</string>
 </resources>
