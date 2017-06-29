@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -22,6 +23,7 @@ public class Main extends Activity {
     TextView textRules, tvCountBegin, tvPlayer1, tvPlayer2;
     Button btnStart, btnBegin, btnReset;
     ImageButton btnPlayer1, btnPlayer2;
+    ImageView winnerImage;
 
     Random rand = new Random();
     RelativeLayout mainBackground, layoutRules, layoutGame;
@@ -33,8 +35,11 @@ public class Main extends Activity {
     MediaPlayer ninja1 = new MediaPlayer();
     MediaPlayer ninja2 = new MediaPlayer();
     MediaPlayer musicGame = new MediaPlayer();
+    MediaPlayer effects = new MediaPlayer();
 
-    int player1, player2;
+    CountDownTimer game;
+
+    int player1, player2, stageGame = 3;
 
     private void checkViewRules(){
         if (prefs.rulesWasRead()){
@@ -66,6 +71,7 @@ public class Main extends Activity {
         tvCountBegin = (TextView)findViewById(R.id.tvCountBegin);
 
         //Game Components
+        winnerImage = (ImageView) findViewById(R.id.winnerImage);
         tvPlayer1 = (TextView)findViewById(R.id.tvPlayer1);
         tvPlayer2 = (TextView)findViewById(R.id.tvPlayer2);
         btnPlayer1 = (ImageButton)findViewById(R.id.btnPlayer1);
@@ -132,6 +138,11 @@ public class Main extends Activity {
         btnReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (game != null){
+                    game.cancel();
+                }
+                musicGame.stop();
+                winnerImage.setVisibility(View.INVISIBLE);
                 hideGameComponents();
                 startCountDownBegin();
             }
@@ -144,24 +155,72 @@ public class Main extends Activity {
             @Override
             public void onClick(View v) {
                 btnBegin.setVisibility(View.INVISIBLE);
+                winnerImage.setVisibility(View.INVISIBLE);
+                hideGameComponents();
                 startCountDownBegin();
             }
         });
     }
 
-    private void playSongCount(String song){
+    private void playSong(String song){
         try{
             AssetFileDescriptor descriptor;
+            if (musicGame != null && musicGame.isPlaying()){
+                musicGame.stop();
+                musicGame.release();
+            }
             musicGame = new MediaPlayer();
 
             descriptor = getAssets().openFd("sounds/" + song);
             musicGame.setDataSource(descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength());
             descriptor.close();
 
-            musicGame.prepare();
             musicGame.setVolume(1f,1f);
             musicGame.setLooping(false);
+            musicGame.prepare();
             musicGame.start();
+
+            musicGame.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                @Override
+                public boolean onError(MediaPlayer mp, int what, int extra) {
+                    System.out.println("Music: what-> " + String.valueOf(what) + " extra-> " + String.valueOf(what));
+                    System.out.println(mp.isPlaying());
+                    return false;
+                }
+            });
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private void playSongEffect(String song){
+        try{
+            AssetFileDescriptor descriptor;
+            if (effects != null && effects.isPlaying()){
+                effects.stop();
+                effects.release();
+            }
+            effects = new MediaPlayer();
+
+            descriptor = getAssets().openFd("sounds/" + song);
+            effects.setDataSource(descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength());
+            descriptor.close();
+
+            effects.setVolume(1f,1f);
+            effects.setLooping(false);
+            effects.prepare();
+            effects.start();
+
+            effects.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                @Override
+                public boolean onError(MediaPlayer mp, int what, int extra) {
+                    System.out.println("Effects: what-> " + String.valueOf(what) + " extra-> " + String.valueOf(what));
+                    System.out.println(mp.isPlaying());
+                    return false;
+                }
+            });
+
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -175,20 +234,20 @@ public class Main extends Activity {
         switch (time){
             case 4:
                 tvCountBegin.setText("3");
-                playSongCount("three.mp3");
+                playSongEffect("three.mp3");
                 break;
             case 3:
                 tvCountBegin.setText("2");
-                playSongCount("two.mp3");
+                playSongEffect("two.mp3");
                 break;
             case 2:
                 tvCountBegin.setText("1");
-                playSongCount("one.mp3");
+                playSongEffect("one.mp3");
                 break;
             case 1:
                 tvCountBegin.setTextSize(100);
                 tvCountBegin.setText("TAP");
-                playSongCount("tap.mp3");
+                playSongEffect("tap.mp3");
                 break;
         }
     }
@@ -230,7 +289,6 @@ public class Main extends Activity {
             }
 
             public void onFinish() {
-                playSongCount(songs.returnSong());
                 tvCountBegin.setVisibility(View.INVISIBLE);
                 btnReset.setVisibility(View.INVISIBLE);
                 showGameComponents();
@@ -238,27 +296,75 @@ public class Main extends Activity {
             }
 
         }.start();
+
     }
 
     private void startChallenge(){
-        tvCountBegin.setTextColor(getResources().getColor(R.color.colorLightningYellow));
+        player1 = 0;
+        tvPlayer1.setText("0");
+        player2 = 0;
+        tvPlayer2.setText("0");
+
+        tvCountBegin.setTextColor(getResources().getColor(R.color.colorGoldenBell));
         tvCountBegin.setText("");
         tvCountBegin.setVisibility(View.VISIBLE);
-        new CountDownTimer(60*1000, 1000) {
+        btnReset.setVisibility(View.VISIBLE);
+
+        int gameTime = (stageGame *5) + 1;
+
+        playSong(songs.returnSong());
+
+        game = new CountDownTimer(gameTime*1000, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 int time = Integer.parseInt(new SimpleDateFormat("ss").format(new Date( millisUntilFinished)));
                 tvCountBegin.setText(String.valueOf(time));
+                switch (time){
+                    case 3:
+                        tvCountBegin.setTextSize(200);
+                        tvCountBegin.setTextColor(getResources().getColor(R.color.colorCrimson));
+                        playSongEffect("three.mp3");
+                        break;
+                    case 2:
+                        playSongEffect("two.mp3");
+                        break;
+                    case 1:
+                        playSongEffect("one.mp3");
+                        break;
+                }
             }
 
             public void onFinish() {
-
+                tvCountBegin.setVisibility(View.INVISIBLE);
+                tvCountBegin.setText("");
+                checkWinner();
             }
 
-        }.start();
+        };
+        game.start();
+    }
+
+    private void checkWinner(){
+        musicGame.stop();
+        hideGameComponents();
+        if(player1 > player2){
+            if(stageGame > 1) stageGame--;
+            playSongEffect("player1.mp3");
+            winnerImage.setImageResource(R.drawable.player1);
+        } else if(player1 < player2){
+            if(stageGame > 1) stageGame--;
+            playSongEffect("player2.mp3");
+            winnerImage.setImageResource(R.drawable.player2);
+        } else {
+            playSongEffect("draw.mp3");
+            winnerImage.setImageResource(R.drawable.draw);
+        }
+        winnerImage.setVisibility(View.VISIBLE);
+        btnReset.setVisibility(View.VISIBLE);
     }
 
     private void showGameComponents(){
+        btnReset.setVisibility(View.VISIBLE);
         btnPlayer1.setVisibility(View.VISIBLE);
         btnPlayer2.setVisibility(View.VISIBLE);
         tvPlayer1.setVisibility(View.VISIBLE);
@@ -266,6 +372,7 @@ public class Main extends Activity {
     }
 
     private void hideGameComponents(){
+        btnReset.setVisibility(View.INVISIBLE);
         btnPlayer1.setVisibility(View.INVISIBLE);
         btnPlayer2.setVisibility(View.INVISIBLE);
         tvPlayer1.setVisibility(View.INVISIBLE);
@@ -306,15 +413,11 @@ public class Main extends Activity {
     private void playTapSong(Boolean player){
         try {
             if (player){
-                if (ninja1.isPlaying()){
-                    ninja1.stop();
-                }else{
+                if(!ninja1.isPlaying()) {
                     ninja1.start();
                 }
             }else{
-                if (ninja2.isPlaying()){
-                    ninja2.stop();
-                }else{
+                if(!ninja2.isPlaying()) {
                     ninja2.start();
                 }
             }
@@ -366,6 +469,11 @@ public class Main extends Activity {
         params.height = size;
         params.width = size;
         btnPlayer2.setLayoutParams(params);
+
+        params = winnerImage.getLayoutParams();
+        params.height = (width/2);
+        params.width = (width/2);
+        winnerImage.setLayoutParams(params);
 
     }
 }
